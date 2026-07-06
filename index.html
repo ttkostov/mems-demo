@@ -3,35 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>MEMS Explorer — Accel / Gyro / Fusion</title>
+<title>MEMS Explorer (Light) — Accel / Gyro / Fusion</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0a0d10;
-    --panel:#11161b;
-    --panel-2:#0d1216;
-    --grid:#1c2530;
-    --line:#26303c;
-    --text:#f2f6f8;
-    --text-dim:#8d9aa8;
-    --text-dimmer:#445261;
-    --accel:#45e8c2;
-    --accel-dim:#1f4f44;
-    --gyro:#f2a65a;
-    --gyro-dim:#5a3f1f;
-    --fusion:#b388ff;
-    --fusion-dim:#3d2e5c;
-    --drift:#ff6b6b;
-    --noise:#5fb3ff;
+    --bg:#FAFAFA;
+    --panel:#F3F3F3;
+    --panel-2:#EDEDED;
+    --grid:#EAEAEA;
+    --line:#DCDCDC;
+    --text:#1A1A1A;
+    --text-dim:#676667;
+    --text-dimmer:#A8A6A3;
+
+    /* Brand identity colors — bright versions for fills/borders/bars/SVG shapes */
+    --accel:#F37001;
+    --gyro:#FCB03C;
+    --fusion:#2B2B2B;
+    --drift:#FCB03C;
+    --noise:#676667;
+
+    /* "Ink" variants — darkened for readable TEXT on a light background.
+       Pure gold/orange fail contrast checks as small text on white, so
+       labels use these while shapes/bars/borders use the bright versions
+       above. */
+    --accel-ink:#C1590A;
+    --gyro-ink:#8A5C00;
+    --fusion-ink:#2B2B2B;
+    --drift-ink:#8A5C00;
+    --noise-ink:#55534F;
+
+    --accel-dim:#FCE3CC;
+    --gyro-dim:#FDECD1;
+    --fusion-dim:#E7E7E7;
     --radius:10px;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{
     margin:0; padding:0; height:100%;
     background:
-      radial-gradient(circle at 15% 0%, #0e1419 0%, var(--bg) 55%);
+      radial-gradient(circle at 15% 0%, #ffffff 0%, var(--bg) 55%);
     color:var(--text);
     font-family:'Inter',sans-serif;
     overflow:hidden;
@@ -44,7 +57,7 @@
   header{
     display:flex; align-items:center; gap:18px;
     padding:14px 20px; border-bottom:1px solid var(--line);
-    background:linear-gradient(180deg, #0d1115, #0a0d10);
+    background:linear-gradient(180deg, #ffffff, #f7f7f7);
     flex-shrink:0;
   }
   .brand{
@@ -64,11 +77,11 @@
     display:flex; align-items:center; gap:7px;
   }
   .tab-btn .dot{ width:6px; height:6px; border-radius:50%; background:currentColor; opacity:.5; }
-  .tab-btn[data-tab="accel"].active{ color:var(--accel); border-color:var(--accel-dim); background:#102420; box-shadow:0 0 0 1px var(--accel-dim) inset, 0 0 16px -6px var(--accel); }
-  .tab-btn[data-tab="gyro"].active{ color:var(--gyro); border-color:var(--gyro-dim); background:#241a10; box-shadow:0 0 0 1px var(--gyro-dim) inset, 0 0 16px -6px var(--gyro); }
-  .tab-btn[data-tab="fusion"].active{ color:var(--fusion); border-color:var(--fusion-dim); background:#1c1628; box-shadow:0 0 0 1px var(--fusion-dim) inset, 0 0 16px -6px var(--fusion); }
-  .tab-btn.active .dot{ opacity:1; box-shadow:0 0 8px currentColor; }
-  .tab-btn:not(.active):hover{ color:var(--text); border-color:#33404f; }
+  .tab-btn[data-tab="accel"].active{ color:var(--accel-ink); border-color:var(--accel); background:var(--accel-dim); box-shadow:0 2px 8px -3px rgba(243,112,1,0.35); }
+  .tab-btn[data-tab="gyro"].active{ color:var(--gyro-ink); border-color:var(--gyro); background:var(--gyro-dim); box-shadow:0 2px 8px -3px rgba(252,176,60,0.4); }
+  .tab-btn[data-tab="fusion"].active{ color:var(--fusion-ink); border-color:var(--fusion); background:var(--fusion-dim); box-shadow:0 2px 8px -3px rgba(0,0,0,0.12); }
+  .tab-btn.active .dot{ opacity:1; }
+  .tab-btn:not(.active):hover{ color:var(--text); border-color:#b9b9b9; }
 
   /* ---------- Main layout ---------- */
   main{ flex:1; display:flex; min-height:0; position:relative; }
@@ -83,7 +96,7 @@
   }
   .viewport::before{
     content:''; position:absolute; inset:0;
-    background:radial-gradient(circle at center, transparent 40%, var(--bg) 100%);
+    background:radial-gradient(circle at center, transparent 55%, var(--bg) 100%);
     pointer-events:none;
   }
   svg{ max-width:94%; max-height:94%; }
@@ -91,7 +104,7 @@
   .sidebar{
     position:absolute; top:0; right:0; bottom:0; width:220px; flex-shrink:0;
     border-left:1px solid var(--line);
-    background:rgba(13,17,21,0.82); backdrop-filter:blur(6px);
+    background:rgba(255,255,255,0.88); backdrop-filter:blur(6px);
     display:flex; flex-direction:column;
     overflow-y:auto; z-index:20;
     transition:transform .2s ease;
@@ -101,13 +114,13 @@
   .sidebar-toggle, .sidebar-reopen{
     position:absolute; top:50%; transform:translateY(-50%);
     width:22px; height:54px; border:1px solid var(--line); border-right:none;
-    background:rgba(13,17,21,0.85); color:var(--text-dim); cursor:pointer;
+    background:rgba(255,255,255,0.92); color:var(--text-dim); cursor:pointer;
     border-radius:8px 0 0 8px; z-index:25; font-size:14px; line-height:1;
     display:flex; align-items:center; justify-content:center;
   }
   .sidebar-toggle{ right:220px; }
   .sidebar-reopen{ right:0; border:1px solid var(--line); border-radius:8px 0 0 8px; display:flex; }
-  .sidebar-toggle:hover, .sidebar-reopen:hover{ color:var(--text); border-color:#3a4856; }
+  .sidebar-toggle:hover, .sidebar-reopen:hover{ color:var(--text); border-color:#b9b9b9; }
   .panel-section{ padding:16px 18px; border-bottom:1px solid var(--line); }
   .panel-label{
     font-family:'Space Grotesk',sans-serif; font-size:11px; font-weight:600;
@@ -118,12 +131,12 @@
   .readout-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
   .readout-row .k{ font-size:12px; color:var(--text-dim); }
   .readout-row .v{ font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:500; color:var(--text); min-width:84px; text-align:right; }
-  .bar-track{ height:5px; border-radius:3px; background:#1b2229; overflow:hidden; margin-top:4px; position:relative; }
+  .bar-track{ height:5px; border-radius:3px; background:#E4E4E4; overflow:hidden; margin-top:4px; position:relative; }
   .bar-fill{ position:absolute; top:0; bottom:0; left:50%; border-radius:3px; transition:none; }
 
   .desc{ font-size:12.5px; line-height:1.55; color:var(--text-dim); }
   .desc b{ color:var(--text); font-weight:600; }
-  .desc code{ font-family:'JetBrains Mono',monospace; font-size:11.5px; background:#1a2128; padding:1px 5px; border-radius:4px; color:var(--text); }
+  .desc code{ font-family:'JetBrains Mono',monospace; font-size:11.5px; background:#EDEDED; padding:1px 5px; border-radius:4px; color:var(--text); }
 
   .legend{ display:flex; flex-direction:column; gap:7px; margin-top:8px;}
   .legend-item{ display:flex; align-items:center; gap:8px; font-size:11.5px; color:var(--text-dim); }
@@ -135,40 +148,41 @@
   .slider-row label .val{ font-family:'JetBrains Mono',monospace; color:var(--text); }
   input[type=range]{
     width:100%; -webkit-appearance:none; appearance:none;
-    height:4px; border-radius:2px; background:#1b2229; outline:none;
+    height:4px; border-radius:2px; background:#E0E0E0; outline:none;
   }
   input[type=range]::-webkit-slider-thumb{
     -webkit-appearance:none; width:17px; height:17px; border-radius:50%;
-    background:var(--fusion); cursor:pointer; border:2px solid #0a0d10;
-    box-shadow:0 0 10px -2px var(--fusion);
+    background:var(--accel); cursor:pointer; border:2px solid #ffffff;
+    box-shadow:0 1px 4px rgba(0,0,0,0.3);
   }
   .slider-caption{ display:flex; justify-content:space-between; font-size:10px; color:var(--text-dimmer); margin-top:6px; }
 
   button.action{
     font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:12.5px;
     letter-spacing:0.03em; padding:9px 12px; border-radius:7px; cursor:pointer;
-    border:1px solid var(--line); background:#161c22; color:var(--text);
+    border:1px solid var(--line); background:#ffffff; color:var(--text);
     width:100%; transition:all .15s ease;
   }
-  button.action:hover{ border-color:#3a4856; background:#1a2128; }
+  button.action:hover{ border-color:#b9b9b9; background:#f5f5f5; }
   button.action.ghost{ background:transparent; color:var(--text-dim); }
 
   /* ---------- Start overlay ---------- */
   #startOverlay{
-    position:fixed; inset:0; background:rgba(8,10,12,0.92);
+    position:fixed; inset:0; background:rgba(255,255,255,0.92);
     display:flex; align-items:center; justify-content:center; z-index:50;
     backdrop-filter:blur(3px);
   }
   .start-card{
-    width:min(420px, 88vw); background:var(--panel); border:1px solid var(--line);
+    width:min(420px, 88vw); background:#ffffff; border:1px solid var(--line);
     border-radius:14px; padding:28px 26px; text-align:center;
+    box-shadow:0 8px 30px -8px rgba(0,0,0,0.15);
   }
-  .start-card h1{ font-family:'Space Grotesk',sans-serif; font-size:21px; margin:0 0 8px; }
+  .start-card h1{ font-family:'Space Grotesk',sans-serif; font-size:21px; margin:0 0 8px; color:var(--text); }
   .start-card p{ font-size:13px; color:var(--text-dim); line-height:1.6; margin:0 0 20px; }
   #startBtn{
     font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14px;
     padding:13px 22px; border-radius:9px; border:none; cursor:pointer;
-    background:linear-gradient(135deg, var(--accel), var(--fusion)); color:#0a0d10; width:100%;
+    background:var(--accel); color:#ffffff; width:100%;
   }
   #demoBtn{ margin-top:10px; }
   .status-line{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dimmer); margin-top:16px; min-height:16px; }
@@ -176,9 +190,9 @@
   .badge{
     position:absolute; top:14px; left:16px; font-family:'JetBrains Mono',monospace;
     font-size:10.5px; padding:5px 10px; border-radius:6px; border:1px solid var(--line);
-    background:rgba(13,18,22,0.85); color:var(--text-dim); display:flex; align-items:center; gap:7px;
+    background:rgba(255,255,255,0.9); color:var(--text-dim); display:flex; align-items:center; gap:7px;
   }
-  .badge .pulse{ width:6px; height:6px; border-radius:50%; background:#3ddc84; box-shadow:0 0 6px #3ddc84; }
+  .badge .pulse{ width:6px; height:6px; border-radius:50%; background:#2E9F53; box-shadow:0 0 6px #2E9F53; }
   .badge.sim .pulse{ background:var(--gyro); box-shadow:0 0 6px var(--gyro); }
 
   .hint{
@@ -188,7 +202,7 @@
   }
 
   ::-webkit-scrollbar{ width:8px; }
-  ::-webkit-scrollbar-thumb{ background:#222b34; border-radius:4px; }
+  ::-webkit-scrollbar-thumb{ background:#CFCFCF; border-radius:4px; }
 
   @media (max-width:780px){
     .sidebar{ width:188px; }
@@ -216,143 +230,138 @@
       <div class="badge" id="modeBadge"><span class="pulse"></span><span id="modeBadgeText">live sensors</span></div>
 
       <!-- ===================== ACCELEROMETER SVG ===================== -->
-      <svg id="svg-accel" viewBox="0 0 520 480" style="display:block">
+      <svg id="svg-accel" viewBox="0 0 520 420" style="display:block">
         <defs>
           <linearGradient id="massGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#5ef5d4"/>
-            <stop offset="100%" stop-color="#2bb89c"/>
+            <stop offset="0%" stop-color="#FFA352"/>
+            <stop offset="100%" stop-color="#F37001"/>
           </linearGradient>
-          <filter id="glowAccel" x="-60%" y="-60%" width="220%" height="220%">
-            <feGaussianBlur stdDeviation="4" result="b"/>
+          <filter id="glowAccel" x="-80%" y="-80%" width="260%" height="260%">
+            <feGaussianBlur stdDeviation="3.5" result="b"/>
             <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
           </filter>
         </defs>
-        <!-- outer fixed frame -->
-        <rect x="60" y="40" width="400" height="300" rx="6" fill="none" stroke="#2a3743" stroke-width="2" stroke-dasharray="4 4"/>
-        <text x="260" y="26" text-anchor="middle" fill="#5b6b7a" font-family="JetBrains Mono" font-size="11">DIE SUBSTRATE (FIXED FRAME)</text>
+        <rect x="60" y="40" width="400" height="300" rx="6" fill="none" stroke="#B8B8B8" stroke-width="2" stroke-dasharray="4 4"/>
+        <text x="260" y="26" text-anchor="middle" fill="var(--text-dim)" font-family="JetBrains Mono" font-size="11">THREE ORTHOGONAL MEMS STRUCTURES — ONE PER AXIS</text>
 
-        <!-- fixed comb fingers, left bank -->
-        <g id="combFixedLeft" stroke="#3a4856" stroke-width="5" stroke-linecap="round"></g>
-        <!-- fixed comb fingers, right bank -->
-        <g id="combFixedRight" stroke="#3a4856" stroke-width="5" stroke-linecap="round"></g>
-
-        <!-- folded-beam springs (4 corners), drawn relative, redrawn each frame -->
-        <g id="springs" stroke="#4a5a6a" stroke-width="2.5" fill="none"></g>
-
-        <!-- moving group: proof mass + moving comb fingers -->
-        <g id="massGroup" filter="url(#glowAccel)">
-          <g id="combMovingLeft" stroke="#5ef5d4" stroke-width="5" stroke-linecap="round"></g>
-          <g id="combMovingRight" stroke="#5ef5d4" stroke-width="5" stroke-linecap="round"></g>
-          <rect id="proofMass" x="-70" y="-45" width="140" height="90" rx="8" fill="url(#massGrad)" stroke="#bdfff0" stroke-width="1.5"/>
-          <text x="0" y="6" text-anchor="middle" fill="#06231d" font-family="JetBrains Mono" font-size="12" font-weight="700">PROOF MASS</text>
-        </g>
-
-        <!-- axis indicator -->
-        <g transform="translate(260,210)">
-          <line id="axArrow" x1="0" y1="0" x2="0" y2="0" stroke="#ffd166" stroke-width="3" marker-end="url(#arrowAccel)"/>
-        </g>
-        <defs>
-          <marker id="arrowAccel" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M0,0 L10,5 L0,10 z" fill="#ffd166"/>
-          </marker>
-        </defs>
-
-        <text x="260" y="368" text-anchor="middle" fill="#5b6b7a" font-family="JetBrains Mono" font-size="10.5">X/Y: capacitance C ∝ 1 / gap(t) — tilt the tablet to shift the mass</text>
-
-        <!-- ===================== Z-AXIS INSET: TORSIONAL SEESAW ===================== -->
-        <g transform="translate(140,382)">
-          <rect x="0" y="0" width="240" height="88" rx="8" fill="#0d1216" stroke="#26303c" stroke-width="1.5"/>
-          <text x="120" y="16" text-anchor="middle" fill="#5b6b7a" font-family="JetBrains Mono" font-size="9.5">Z-AXIS — SIDE VIEW (TORSIONAL SEESAW)</text>
-
-          <!-- fixed electrode plates (do not rotate) -->
-          <rect id="zPlateLeft" x="35" y="66" width="40" height="6" rx="1.5" fill="#3a4856"/>
-          <rect id="zPlateRight" x="165" y="66" width="40" height="6" rx="1.5" fill="#3a4856"/>
-
-          <!-- pivot anchor -->
-          <rect x="115" y="46" width="10" height="14" fill="#26303c"/>
-          <line x1="120" y1="60" x2="120" y2="66" stroke="#3a4856" stroke-width="2"/>
-
-          <!-- rotating seesaw: asymmetric mass either side of pivot -->
-          <g id="zSeesaw">
-            <line x1="50" y1="50" x2="190" y2="50" stroke="#5ef5d4" stroke-width="3"/>
-            <rect x="42" y="44" width="18" height="12" rx="2" fill="#2bb89c" stroke="#bdfff0" stroke-width="1"/>
-            <rect x="168" y="39" width="30" height="22" rx="3" fill="#5ef5d4" stroke="#bdfff0" stroke-width="1"/>
+        <!-- ============ X structure (in-plane, lateral) ============ -->
+        <g transform="translate(150,175)">
+          <rect x="-8" y="-50" width="16" height="12" fill="#8C8C8C"/>
+          <rect x="-8" y="38" width="16" height="12" fill="#8C8C8C"/>
+          <line x1="0" y1="-38" x2="0" y2="-16" stroke="#9A9A9A" stroke-width="2.5"/>
+          <line x1="0" y1="16" x2="0" y2="38" stroke="#9A9A9A" stroke-width="2.5"/>
+          <g id="accelFixedX" stroke="#8C8C8C" stroke-width="3.5" stroke-linecap="round"></g>
+          <g id="accelMassX" filter="url(#glowAccel)">
+            <g id="accelMovingX" stroke="#F37001" stroke-width="3.5" stroke-linecap="round"></g>
+            <rect x="-18" y="-14" width="36" height="28" rx="6" fill="url(#massGrad)" stroke="#FFD9B3" stroke-width="1.3"/>
           </g>
-
-          <text x="55" y="78" text-anchor="middle" fill="#5b6b7a" font-family="JetBrains Mono" font-size="8">light</text>
-          <text x="183" y="78" text-anchor="middle" fill="#5b6b7a" font-family="JetBrains Mono" font-size="8">heavy</text>
         </g>
+        <text x="150" y="252" text-anchor="middle" fill="#C1590A" font-family="Space Grotesk" font-size="12" font-weight="700">X-AXIS</text>
+        <text x="150" y="268" text-anchor="middle" fill="var(--text-dim)" font-family="JetBrains Mono" font-size="9.5">↔ in-plane, lateral</text>
 
-        <text x="260" y="468" text-anchor="middle" fill="#5b6b7a" font-family="JetBrains Mono" font-size="10.5">Z: mass imbalance → torque → tilt → differential capacitance</text>
+        <!-- ============ Y structure (in-plane, same design rotated 90°) ============ -->
+        <g transform="translate(260,175) rotate(90)">
+          <rect x="-8" y="-50" width="16" height="12" fill="#8C8C8C"/>
+          <rect x="-8" y="38" width="16" height="12" fill="#8C8C8C"/>
+          <line x1="0" y1="-38" x2="0" y2="-16" stroke="#9A9A9A" stroke-width="2.5"/>
+          <line x1="0" y1="16" x2="0" y2="38" stroke="#9A9A9A" stroke-width="2.5"/>
+          <g id="accelFixedY" stroke="#8C8C8C" stroke-width="3.5" stroke-linecap="round"></g>
+          <g id="accelMassY" filter="url(#glowAccel)">
+            <g id="accelMovingY" stroke="#F37001" stroke-width="3.5" stroke-linecap="round"></g>
+            <rect x="-18" y="-14" width="36" height="28" rx="6" fill="url(#massGrad)" stroke="#FFD9B3" stroke-width="1.3"/>
+          </g>
+        </g>
+        <text x="260" y="252" text-anchor="middle" fill="#C1590A" font-family="Space Grotesk" font-size="12" font-weight="700">Y-AXIS</text>
+        <text x="260" y="268" text-anchor="middle" fill="var(--text-dim)" font-family="JetBrains Mono" font-size="9.5">↕ same design, rotated 90°</text>
+
+        <!-- ============ Z structure (out-of-plane, torsional seesaw) ============ -->
+        <g transform="translate(370,175)">
+          <rect x="-5" y="-20" width="10" height="10" fill="#6E6E6E"/>
+          <line x1="0" y1="-10" x2="0" y2="-3" stroke="#8C8C8C" stroke-width="2"/>
+          <g id="zSeesaw">
+            <line x1="-35" y1="0" x2="35" y2="0" stroke="#F37001" stroke-width="3"/>
+            <rect x="-41" y="-5" width="14" height="9" rx="2" fill="#C1590A" stroke="#FFD9B3" stroke-width="1"/>
+            <rect x="24" y="-8" width="20" height="15" rx="3" fill="#F37001" stroke="#FFD9B3" stroke-width="1"/>
+          </g>
+          <rect id="zPlateLeft" x="-42" y="14" width="16" height="5" rx="1.5" fill="#8C8C8C"/>
+          <rect id="zPlateRight" x="26" y="14" width="16" height="5" rx="1.5" fill="#8C8C8C"/>
+          <text x="-34" y="32" text-anchor="middle" fill="var(--text-dim)" font-family="JetBrains Mono" font-size="7.5">light</text>
+          <text x="34" y="32" text-anchor="middle" fill="var(--text-dim)" font-family="JetBrains Mono" font-size="7.5">heavy</text>
+        </g>
+        <text x="370" y="252" text-anchor="middle" fill="#C1590A" font-family="Space Grotesk" font-size="12" font-weight="700">Z-AXIS</text>
+        <text x="370" y="268" text-anchor="middle" fill="var(--text-dim)" font-family="JetBrains Mono" font-size="9.5">⤢ out-of-plane, tilt</text>
+
+        <text x="260" y="310" text-anchor="middle" fill="var(--text-dim)" font-family="JetBrains Mono" font-size="10.5">X &amp; Y: identical lateral comb-drive, mounted 90° apart on the die</text>
+        <text x="260" y="326" text-anchor="middle" fill="var(--text-dim)" font-family="JetBrains Mono" font-size="10.5">Z: a separate torsional structure — in-plane sensing doesn't extend upward</text>
       </svg>
 
       <!-- ===================== GYROSCOPE SVG ===================== -->
       <svg id="svg-gyro" viewBox="0 0 520 420" style="display:none">
         <defs>
           <linearGradient id="tineGradX" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#ffcb8a"/><stop offset="100%" stop-color="#d97f2a"/>
+            <stop offset="0%" stop-color="#FFB067"/><stop offset="100%" stop-color="#F37001"/>
           </linearGradient>
           <linearGradient id="tineGradY" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#ffb3cf"/><stop offset="100%" stop-color="#d9497a"/>
+            <stop offset="0%" stop-color="#FFDA96"/><stop offset="100%" stop-color="#FCB03C"/>
           </linearGradient>
           <linearGradient id="tineGradZ" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#a9dcff"/><stop offset="100%" stop-color="#2f8fd9"/>
+            <stop offset="0%" stop-color="#A8A8A8"/><stop offset="100%" stop-color="#676667"/>
           </linearGradient>
           <filter id="glowGyro" x="-80%" y="-80%" width="260%" height="260%">
             <feGaussianBlur stdDeviation="5" result="b"/>
             <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
           </filter>
         </defs>
-        <rect x="60" y="40" width="400" height="300" rx="6" fill="none" stroke="#2a3743" stroke-width="2" stroke-dasharray="4 4"/>
-        <text x="260" y="26" text-anchor="middle" fill="#5b6b7a" font-family="JetBrains Mono" font-size="11">ALL THREE CHANNELS VIBRATE CONTINUOUSLY — WATCH WHICH ONE DEFLECTS</text>
+        <rect x="60" y="40" width="400" height="300" rx="6" fill="none" stroke="#B8B8B8" stroke-width="2" stroke-dasharray="4 4"/>
+        <text x="260" y="26" text-anchor="middle" fill="var(--text-dim)" font-family="JetBrains Mono" font-size="11">ALL THREE CHANNELS VIBRATE CONTINUOUSLY — WATCH WHICH ONE DEFLECTS</text>
 
         <!-- ============ X channel (pitch) ============ -->
         <g id="gyroChanX" transform="translate(150,195)">
-          <rect x="-50" y="-14" width="12" height="28" fill="#3a4856"/>
-          <rect x="38" y="-14" width="12" height="28" fill="#3a4856"/>
-          <line x1="-38" y1="0" x2="-15" y2="0" stroke="#4a5a6a" stroke-width="2.5"/>
-          <line x1="15" y1="0" x2="38" y2="0" stroke="#4a5a6a" stroke-width="2.5"/>
+          <rect x="-50" y="-14" width="12" height="28" fill="#8C8C8C"/>
+          <rect x="38" y="-14" width="12" height="28" fill="#8C8C8C"/>
+          <line x1="-38" y1="0" x2="-15" y2="0" stroke="#9A9A9A" stroke-width="2.5"/>
+          <line x1="15" y1="0" x2="38" y2="0" stroke="#9A9A9A" stroke-width="2.5"/>
           <g id="gyroForkX">
-            <rect x="-30" y="-13" width="60" height="26" rx="8" fill="url(#tineGradX)" stroke="#ffe5c2" stroke-width="1.5"/>
-            <line x1="-30" y1="0" x2="-44" y2="0" stroke="#ffcb8a" stroke-width="3"/>
-            <line x1="30" y1="0" x2="44" y2="0" stroke="#ffcb8a" stroke-width="3"/>
+            <rect x="-30" y="-13" width="60" height="26" rx="8" fill="url(#tineGradX)" stroke="#FFDBB0" stroke-width="1.5"/>
+            <line x1="-30" y1="0" x2="-44" y2="0" stroke="#FFB067" stroke-width="3"/>
+            <line x1="30" y1="0" x2="44" y2="0" stroke="#FFB067" stroke-width="3"/>
           </g>
-          <text x="0" y="44" text-anchor="middle" fill="#f2a65a" font-family="Space Grotesk" font-size="12" font-weight="700">X · PITCH</text>
-          <text id="gxValInline" x="0" y="60" text-anchor="middle" fill="#8d9aa8" font-family="JetBrains Mono" font-size="10.5">0.0 °/s</text>
+          <text x="0" y="44" text-anchor="middle" fill="#C1590A" font-family="Space Grotesk" font-size="12" font-weight="700">X · PITCH</text>
+          <text id="gxValInline" x="0" y="60" text-anchor="middle" fill="var(--text-dim)" font-family="JetBrains Mono" font-size="10.5">0.0 °/s</text>
         </g>
 
         <!-- ============ Y channel (roll) ============ -->
         <g id="gyroChanY" transform="translate(260,195)">
-          <rect x="-50" y="-14" width="12" height="28" fill="#3a4856"/>
-          <rect x="38" y="-14" width="12" height="28" fill="#3a4856"/>
-          <line x1="-38" y1="0" x2="-15" y2="0" stroke="#4a5a6a" stroke-width="2.5"/>
-          <line x1="15" y1="0" x2="38" y2="0" stroke="#4a5a6a" stroke-width="2.5"/>
+          <rect x="-50" y="-14" width="12" height="28" fill="#8C8C8C"/>
+          <rect x="38" y="-14" width="12" height="28" fill="#8C8C8C"/>
+          <line x1="-38" y1="0" x2="-15" y2="0" stroke="#9A9A9A" stroke-width="2.5"/>
+          <line x1="15" y1="0" x2="38" y2="0" stroke="#9A9A9A" stroke-width="2.5"/>
           <g id="gyroForkY">
-            <rect x="-30" y="-13" width="60" height="26" rx="8" fill="url(#tineGradY)" stroke="#ffd7e6" stroke-width="1.5"/>
-            <line x1="-30" y1="0" x2="-44" y2="0" stroke="#ffb3cf" stroke-width="3"/>
-            <line x1="30" y1="0" x2="44" y2="0" stroke="#ffb3cf" stroke-width="3"/>
+            <rect x="-30" y="-13" width="60" height="26" rx="8" fill="url(#tineGradY)" stroke="#FDECC7" stroke-width="1.5"/>
+            <line x1="-30" y1="0" x2="-44" y2="0" stroke="#FFDA96" stroke-width="3"/>
+            <line x1="30" y1="0" x2="44" y2="0" stroke="#FFDA96" stroke-width="3"/>
           </g>
-          <text x="0" y="44" text-anchor="middle" fill="#ff7aa8" font-family="Space Grotesk" font-size="12" font-weight="700">Y · ROLL</text>
-          <text id="gyValInline" x="0" y="60" text-anchor="middle" fill="#8d9aa8" font-family="JetBrains Mono" font-size="10.5">0.0 °/s</text>
+          <text x="0" y="44" text-anchor="middle" fill="#8A5C00" font-family="Space Grotesk" font-size="12" font-weight="700">Y · ROLL</text>
+          <text id="gyValInline" x="0" y="60" text-anchor="middle" fill="var(--text-dim)" font-family="JetBrains Mono" font-size="10.5">0.0 °/s</text>
         </g>
 
         <!-- ============ Z channel (yaw) ============ -->
         <g id="gyroChanZ" transform="translate(370,195)">
-          <rect x="-50" y="-14" width="12" height="28" fill="#3a4856"/>
-          <rect x="38" y="-14" width="12" height="28" fill="#3a4856"/>
-          <line x1="-38" y1="0" x2="-15" y2="0" stroke="#4a5a6a" stroke-width="2.5"/>
-          <line x1="15" y1="0" x2="38" y2="0" stroke="#4a5a6a" stroke-width="2.5"/>
+          <rect x="-50" y="-14" width="12" height="28" fill="#8C8C8C"/>
+          <rect x="38" y="-14" width="12" height="28" fill="#8C8C8C"/>
+          <line x1="-38" y1="0" x2="-15" y2="0" stroke="#9A9A9A" stroke-width="2.5"/>
+          <line x1="15" y1="0" x2="38" y2="0" stroke="#9A9A9A" stroke-width="2.5"/>
           <g id="gyroForkZ">
-            <rect x="-30" y="-13" width="60" height="26" rx="8" fill="url(#tineGradZ)" stroke="#d3ecff" stroke-width="1.5"/>
-            <line x1="-30" y1="0" x2="-44" y2="0" stroke="#a9dcff" stroke-width="3"/>
-            <line x1="30" y1="0" x2="44" y2="0" stroke="#a9dcff" stroke-width="3"/>
+            <rect x="-30" y="-13" width="60" height="26" rx="8" fill="url(#tineGradZ)" stroke="#D6D6D6" stroke-width="1.5"/>
+            <line x1="-30" y1="0" x2="-44" y2="0" stroke="#A8A8A8" stroke-width="3"/>
+            <line x1="30" y1="0" x2="44" y2="0" stroke="#A8A8A8" stroke-width="3"/>
           </g>
-          <text x="0" y="44" text-anchor="middle" fill="#6cc4ff" font-family="Space Grotesk" font-size="12" font-weight="700">Z · YAW</text>
-          <text id="gzValInline" x="0" y="60" text-anchor="middle" fill="#8d9aa8" font-family="JetBrains Mono" font-size="10.5">0.0 °/s</text>
+          <text x="0" y="44" text-anchor="middle" fill="#55534F" font-family="Space Grotesk" font-size="12" font-weight="700">Z · YAW</text>
+          <text id="gzValInline" x="0" y="60" text-anchor="middle" fill="var(--text-dim)" font-family="JetBrains Mono" font-size="10.5">0.0 °/s</text>
         </g>
 
-        <text id="axisCallout" x="260" y="290" text-anchor="middle" fill="#8d9aa8" font-family="JetBrains Mono" font-size="11" font-weight="500">dominant: —</text>
-        <text x="260" y="400" text-anchor="middle" fill="#5b6b7a" font-family="JetBrains Mono" font-size="10.5">rotate the tablet — Coriolis force deflects each vibrating mass sideways</text>
+        <text id="axisCallout" x="260" y="290" text-anchor="middle" fill="var(--text-dim)" font-family="JetBrains Mono" font-size="11" font-weight="500">dominant: —</text>
+        <text x="260" y="400" text-anchor="middle" fill="var(--text-dim)" font-family="JetBrains Mono" font-size="10.5">rotate the tablet — Coriolis force deflects each vibrating mass sideways</text>
       </svg>
 
       <!-- ===================== FUSION VIEW (HTML/CSS 3D) ===================== -->
@@ -360,7 +369,7 @@
         <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:clamp(40px,6vw,100px); perspective:900px;">
 
           <div style="text-align:center;">
-            <div class="ghost-label" style="font-family:'JetBrains Mono'; font-size:12px; color:var(--noise); margin-bottom:16px;">ACCEL ONLY<br><span style="color:#5b6b7a">noisy, no drift</span></div>
+            <div class="ghost-label" style="font-family:'JetBrains Mono'; font-size:12px; color:var(--noise-ink); margin-bottom:16px;">ACCEL ONLY<br><span style="color:var(--text-dim)">noisy, no drift</span></div>
             <div id="cubeAccelWrap" style="width:140px; height:140px; perspective:700px; margin:0 auto; opacity:0.55;">
               <div class="cube ghost" id="cubeAccel" data-color="var(--noise)"></div>
             </div>
@@ -374,7 +383,7 @@
           </div>
 
           <div style="text-align:center;">
-            <div class="ghost-label" style="font-family:'JetBrains Mono'; font-size:12px; color:var(--drift); margin-bottom:16px;">GYRO ONLY<br><span style="color:#5b6b7a">smooth, drifts</span></div>
+            <div class="ghost-label" style="font-family:'JetBrains Mono'; font-size:12px; color:var(--drift-ink); margin-bottom:16px;">GYRO ONLY<br><span style="color:var(--text-dim)">smooth, drifts</span></div>
             <div id="cubeGyroWrap" style="width:140px; height:140px; perspective:700px; margin:0 auto; opacity:0.55;">
               <div class="cube ghost" id="cubeGyro" data-color="var(--drift)"></div>
             </div>
@@ -392,7 +401,7 @@
       <!-- ACCEL panel -->
       <div id="panel-accel">
         <div class="panel-section">
-          <div class="panel-label">Live readout <span style="color:var(--accel)">ACCEL</span></div>
+          <div class="panel-label">Live readout <span style="color:var(--accel-ink)">ACCEL</span></div>
           <div class="readout">
             <div class="readout-row"><span class="k">ax</span><span class="v" id="ax-val">0.00 g</span></div>
             <div class="bar-track"><div class="bar-fill" id="ax-bar" style="background:var(--accel)"></div></div>
@@ -407,14 +416,14 @@
       <!-- GYRO panel -->
       <div id="panel-gyro" style="display:none">
         <div class="panel-section">
-          <div class="panel-label">Live readout <span style="color:var(--gyro)">GYRO</span></div>
+          <div class="panel-label">Live readout <span style="color:var(--gyro-ink)">GYRO</span></div>
           <div class="readout">
-            <div class="readout-row"><span class="k" style="color:#f2a65a">rate x (β)</span><span class="v" id="gx-val">0.0 °/s</span></div>
-            <div class="bar-track"><div class="bar-fill" id="gx-bar" style="background:#f2a65a"></div></div>
-            <div class="readout-row"><span class="k" style="color:#ff7aa8">rate y (γ)</span><span class="v" id="gy-val">0.0 °/s</span></div>
-            <div class="bar-track"><div class="bar-fill" id="gy-bar" style="background:#ff7aa8"></div></div>
-            <div class="readout-row"><span class="k" style="color:#6cc4ff">rate z (α)</span><span class="v" id="gz-val">0.0 °/s</span></div>
-            <div class="bar-track"><div class="bar-fill" id="gz-bar" style="background:#6cc4ff"></div></div>
+            <div class="readout-row"><span class="k" style="color:#C1590A">rate x (β)</span><span class="v" id="gx-val">0.0 °/s</span></div>
+            <div class="bar-track"><div class="bar-fill" id="gx-bar" style="background:#F37001"></div></div>
+            <div class="readout-row"><span class="k" style="color:#8A5C00">rate y (γ)</span><span class="v" id="gy-val">0.0 °/s</span></div>
+            <div class="bar-track"><div class="bar-fill" id="gy-bar" style="background:#FCB03C"></div></div>
+            <div class="readout-row"><span class="k" style="color:#55534F">rate z (α)</span><span class="v" id="gz-val">0.0 °/s</span></div>
+            <div class="bar-track"><div class="bar-fill" id="gz-bar" style="background:#676667"></div></div>
           </div>
         </div>
       </div>
@@ -433,8 +442,8 @@
           <div class="readout">
             <div class="readout-row"><span class="k">pitch (fused)</span><span class="v" id="pitchFused-val">0.0°</span></div>
             <div class="readout-row"><span class="k">roll (fused)</span><span class="v" id="rollFused-val">0.0°</span></div>
-            <div class="readout-row"><span class="k" style="color:var(--noise)">pitch (accel)</span><span class="v" id="pitchAccel-val">0.0°</span></div>
-            <div class="readout-row"><span class="k" style="color:var(--drift)">pitch (gyro)</span><span class="v" id="pitchGyro-val">0.0°</span></div>
+            <div class="readout-row"><span class="k" style="color:var(--noise-ink)">pitch (accel)</span><span class="v" id="pitchAccel-val">0.0°</span></div>
+            <div class="readout-row"><span class="k" style="color:var(--drift-ink)">pitch (gyro)</span><span class="v" id="pitchGyro-val">0.0°</span></div>
           </div>
           <button class="action ghost" id="resetDriftBtn" style="margin-top:12px;">Reset gyro drift</button>
         </div>
@@ -468,18 +477,18 @@
   }
   .cube .face{
     position:absolute; width:100%; height:100%;
-    border:1.5px solid rgba(255,255,255,0.18);
-    background:linear-gradient(135deg, rgba(179,136,255,0.35), rgba(179,136,255,0.08));
+    border:1.5px solid rgba(43,43,43,0.28);
+    background:linear-gradient(135deg, rgba(243,112,1,0.14), rgba(243,112,1,0.04));
     display:flex; align-items:center; justify-content:center;
-    font-family:'JetBrains Mono'; font-size:10px; color:rgba(255,255,255,0.5);
+    font-family:'JetBrains Mono'; font-size:10px; color:rgba(43,43,43,0.55);
     backface-visibility:visible;
   }
   .cube.ghost .face{
-    background:rgba(255,255,255,0.04);
-    border-color:rgba(255,255,255,0.15);
+    background:rgba(0,0,0,0.025);
+    border-color:rgba(0,0,0,0.14);
   }
-  #cubeAccel .face{ border-color:rgba(95,179,255,0.45); }
-  #cubeGyro .face{ border-color:rgba(255,107,107,0.45); }
+  #cubeAccel .face{ border-color:rgba(103,102,103,0.55); }
+  #cubeGyro .face{ border-color:rgba(252,176,60,0.7); }
 </style>
 
 <script>
@@ -654,70 +663,47 @@
   });
 
   /* ============ comb finger geometry (built once) ============ */
-  const NUM_TEETH = 6;
-  const TEETH_GAP = 14;
-  function buildCombs(){
-    const fixedL = document.getElementById('combFixedLeft');
-    const fixedR = document.getElementById('combFixedRight');
-    const movL = document.getElementById('combMovingLeft');
-    const movR = document.getElementById('combMovingRight');
-    for(let i=0;i<NUM_TEETH;i++){
-      const y = -45 + i*(90/(NUM_TEETH-1));
-      // fixed left bank anchored to frame at x=110
-      fixedL.insertAdjacentHTML('beforeend', `<line x1="110" y1="${210+y}" x2="150" y2="${210+y}"/>`);
-      // fixed right bank anchored to frame at x=410
-      fixedR.insertAdjacentHTML('beforeend', `<line x1="410" y1="${210+y}" x2="370" y2="${210+y}"/>`);
-      // moving teeth, in mass-local coords (mass center will be transformed)
-      movL.insertAdjacentHTML('beforeend', `<line x1="-70" y1="${y}" x2="-115" y2="${y}"/>`);
-      movR.insertAdjacentHTML('beforeend', `<line x1="70" y1="${y}" x2="115" y2="${y}"/>`);
+  const NUM_TEETH_MINI = 4;
+  function buildMiniCombs(fixedId, movingId){
+    const fixed = document.getElementById(fixedId);
+    const moving = document.getElementById(movingId);
+    for(let i=0;i<NUM_TEETH_MINI;i++){
+      const y = -16 + i*(32/(NUM_TEETH_MINI-1));
+      // fixed banks anchored to the frame, left and right of the mass
+      fixed.insertAdjacentHTML('beforeend', `<line x1="-46" y1="${y}" x2="-34" y2="${y}"/>`);
+      fixed.insertAdjacentHTML('beforeend', `<line x1="46" y1="${y}" x2="34" y2="${y}"/>`);
+      // moving teeth, in mass-local coords (the mass group gets translated each frame)
+      moving.insertAdjacentHTML('beforeend', `<line x1="-18" y1="${y}" x2="-38" y2="${y}"/>`);
+      moving.insertAdjacentHTML('beforeend', `<line x1="18" y1="${y}" x2="38" y2="${y}"/>`);
     }
   }
-  buildCombs();
-
-  function buildSprings(){
-    // simple folded-beam look, redrawn relative to mass offset each frame via JS below
-  }
+  buildMiniCombs('accelFixedX', 'accelMovingX');
+  buildMiniCombs('accelFixedY', 'accelMovingY');
 
   /* ============ rendering: accelerometer ============ */
-  const massGroup = document.getElementById('massGroup');
-  const axArrow = document.getElementById('axArrow');
-  const springsG = document.getElementById('springs');
+  const accelMassX = document.getElementById('accelMassX');
+  const accelMassY = document.getElementById('accelMassY');
   const zSeesaw = document.getElementById('zSeesaw');
   const zPlateLeft = document.getElementById('zPlateLeft');
   const zPlateRight = document.getElementById('zPlateRight');
 
   function renderAccel(ax_g, ay_g, az_g){
-    const dx = Math.max(-46, Math.min(46, ax_g * 46));
-    const dy = Math.max(-30, Math.min(30, -ay_g * 30));
-    massGroup.setAttribute('transform', `translate(${260+dx},${210+dy})`);
+    // X and Y structures are the identical design, one plain and one wrapped
+    // in a 90° rotation at the markup level — so both just translate along
+    // their own local x-axis here, and the outer rotation on Y turns that
+    // into the correct global (vertical) direction automatically.
+    const dxX = Math.max(-26, Math.min(26, ax_g * 30));
+    const dxY = Math.max(-26, Math.min(26, ay_g * 30));
+    accelMassX.setAttribute('transform', `translate(${dxX},0)`);
+    accelMassY.setAttribute('transform', `translate(${dxY},0)`);
 
     // Z-axis: torsional seesaw tilts around its pivot, driven by deviation
     // from the resting 1g reading (at rest, flat, az_g ≈ 1 and the seesaw is level)
     const zTilt = Math.max(-24, Math.min(24, (az_g - 1) * 22));
-    zSeesaw.setAttribute('transform', `rotate(${zTilt} 120 50)`);
+    zSeesaw.setAttribute('transform', `rotate(${zTilt})`);
     const bias = Math.max(-1, Math.min(1, zTilt/24));
     zPlateRight.setAttribute('fill-opacity', (0.55 + bias*0.45).toFixed(2));
     zPlateLeft.setAttribute('fill-opacity', (0.55 - bias*0.45).toFixed(2));
-
-    // springs: 4 zigzag folded beams from frame corners to mass corners
-    const corners = [
-      {fx:110, fy:80,  mx:260-60+dx, my:210-35+dy},
-      {fx:410, fy:80,  mx:260+60+dx, my:210-35+dy},
-      {fx:110, fy:300, mx:260-60+dx, my:210+35+dy},
-      {fx:410, fy:300, mx:260+60+dx, my:210+35+dy},
-    ];
-    let path = '';
-    corners.forEach(c=>{
-      const midx = (c.fx+c.mx)/2, midy=(c.fy+c.my)/2;
-      const nx = -(c.my-c.fy), ny = (c.mx-c.fx);
-      const len = Math.hypot(nx,ny)||1;
-      const ox = nx/len*10, oy = ny/len*10;
-      path += `M${c.fx},${c.fy} L${midx+ox},${midy+oy} L${midx-ox},${midy-oy} L${c.mx},${c.my} `;
-    });
-    springsG.innerHTML = `<path d="${path}" />`;
-
-    axArrow.setAttribute('x2', dx*1.1);
-    axArrow.setAttribute('y2', dy*1.1);
   }
 
   /* ============ rendering: gyroscope ============ */
@@ -741,7 +727,7 @@
       forkEl.parentNode.style.opacity = '0.55';
     }
     valEl.textContent = rate.toFixed(1) + ' °/s';
-    valEl.style.fill = isDominant ? colorHex : '#8d9aa8';
+    valEl.style.fill = isDominant ? colorHex : 'var(--text-dim)';
   }
 
   function renderGyro(rx,ry,rz, dt){
@@ -751,16 +737,16 @@
     const driveY = Math.sin(driveT + 2.1) * 10;
     const driveZ = Math.sin(driveT + 4.2) * 10;
 
-    const mags = [{n:'X · pitch', v:rx, c:'#f2a65a'},{n:'Y · roll', v:ry, c:'#ff7aa8'},{n:'Z · yaw', v:rz, c:'#6cc4ff'}];
+    const mags = [{n:'X · pitch', v:rx, c:'#C1590A'},{n:'Y · roll', v:ry, c:'#8A5C00'},{n:'Z · yaw', v:rz, c:'#55534F'}];
     mags.sort((a,b)=>Math.abs(b.v)-Math.abs(a.v));
     const dominant = mags[0];
     const dominantIsSignificant = Math.abs(dominant.v) > 4; // ignore noise-level dominance
     axisCallout.textContent = dominantIsSignificant ? `dominant: ${dominant.n}  (${dominant.v.toFixed(1)} °/s)` : 'dominant: — (hold still or rotate to see)';
-    axisCallout.style.fill = dominantIsSignificant ? dominant.c : '#8d9aa8';
+    axisCallout.style.fill = dominantIsSignificant ? dominant.c : 'var(--text-dim)';
 
-    renderGyroChannel(gyroForkX, gxValInline, rx, driveX, dominantIsSignificant && dominant.n.startsWith('X'), '#f2a65a');
-    renderGyroChannel(gyroForkY, gyValInline, ry, driveY, dominantIsSignificant && dominant.n.startsWith('Y'), '#ff7aa8');
-    renderGyroChannel(gyroForkZ, gzValInline, rz, driveZ, dominantIsSignificant && dominant.n.startsWith('Z'), '#6cc4ff');
+    renderGyroChannel(gyroForkX, gxValInline, rx, driveX, dominantIsSignificant && dominant.n.startsWith('X'), '#C1590A');
+    renderGyroChannel(gyroForkY, gyValInline, ry, driveY, dominantIsSignificant && dominant.n.startsWith('Y'), '#8A5C00');
+    renderGyroChannel(gyroForkZ, gzValInline, rz, driveZ, dominantIsSignificant && dominant.n.startsWith('Z'), '#55534F');
   }
 
   /* ============ rendering: fusion cubes ============ */
